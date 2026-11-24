@@ -5,23 +5,22 @@ use craft::ui::patterns::form_dialogs::{AboutImage, AboutInfo, AboutLink, AboutT
 
 use crate::PdfCraftApp;
 
-/// The ArtCraft mark, unmodified (AGENTS.md §1.2); the framework draws it through its SVG picture.
-const MARK: &[u8] = include_bytes!("../../../../docs/brand/artcraft-mark.svg");
-/// The ArtCraft wordmark for a light theme.
-const LOGO: &[u8] = include_bytes!("../../../../docs/brand/artcraft-logo.svg");
-/// The ArtCraft wordmark for a dark theme, which the light one would not read on.
-const LOGO_WHITE: &[u8] = include_bytes!("../../../../docs/brand/artcraft-logo-white.svg");
+/// PatroneOS edition: the app's own icon in place of the ArtCraft mark and wordmark, which a modified version may
+/// not show (docs/brand/LICENSE-brand.txt); the framework draws it through its SVG picture.
+const MARK: &[u8] = include_bytes!("../../../../assets/app-icon/pdfcraft.svg");
 
-/// What the About tab shows: PdfCraft's name, blurb and version, the ArtCraft brand, and the community links.
+/// What the About tab shows: PdfCraft's name, blurb and version, the app's icon, and the community links.
 fn info() -> AboutInfo {
     let info = AboutInfo::new(
         "PdfCraft",
         tl!("A clean-room, open-source PDF application written in Rust. MIT OR Apache-2.0."),
         pdfcraft_engine::build_info::version(),
     )
-    .mark(AboutImage::svg("ArtCraft", MARK))
-    .part_of(AboutImage::svg("ArtCraft", LOGO).dark(LOGO_WHITE))
-    .built_with("Rendering: hayro (bootstrap) · UI: egui · Icons: Lucide (ISC) · Fonts: Inter, JetBrains Mono, Dancing Script (OFL)");
+    .mark(AboutImage::svg("PdfCraft", MARK))
+    .built_with(
+        "PatroneOS edition, based on PdfCraft by the ArtCraft team · Rendering: hayro (bootstrap) · UI: egui · Icons: Lucide (ISC) · \
+         Fonts: PatroneOS Sans and Mono, Inter, JetBrains Mono, Dancing Script (OFL)",
+    );
     info.links(pdfcraft_engine::links::LINKS.iter().enumerate().map(|(i, l)| {
         let label = if i == 0 { tl!("Join our Discord") } else { tl!(l.label) };
         AboutLink::new(label.to_string(), l.url).icon(IconId::new(l.icon))

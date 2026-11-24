@@ -63,8 +63,18 @@ pub fn ui_fonts(lang: Lang) -> UiFonts<'static> {
     let mut emoji = Emoji::default();
     emoji.monochrome = noto_emoji();
     let fonts = UiFonts::new(&SCRIPTS)
-        .app_face("Inter", own_face(platform, "Inter", pdfcraft_fonts::INTER_REGULAR), &[proportional.clone(), monospace.clone()])
+        // PatroneOS edition: the PatroneOS faces lead each family; Inter and JetBrains Mono follow them
+        // for the letters PatroneOS lacks (Cyrillic, Greek and the rest beyond Latin). JetBrains Mono is
+        // added here, ahead of Inter, so that monospace text keeps fixed-width letters for those too.
+        .app_face("PatroneOSSans", own_face(platform, "PatroneOSSans", PATRONEOS_SANS), std::slice::from_ref(&proportional))
+        .app_face("PatroneOSMono", own_face(platform, "PatroneOSMono", PATRONEOS_MONO), std::slice::from_ref(&monospace))
         .app_face("JetBrainsMono", own_face(platform, "JetBrainsMono", JETBRAINS_MONO), std::slice::from_ref(&monospace))
+        .app_face(
+            "PatroneOSSans-SemiBold",
+            own_face(platform, "PatroneOSSans-SemiBold", PATRONEOS_SANS_SEMIBOLD),
+            &[medium.clone(), semibold.clone()],
+        )
+        .app_face("Inter", own_face(platform, "Inter", pdfcraft_fonts::INTER_REGULAR), &[proportional.clone(), monospace.clone()])
         .app_face("Inter-Medium", own_face(platform, "Inter-Medium", INTER_MEDIUM), std::slice::from_ref(&medium))
         .app_face("Inter-SemiBold", own_face(platform, "Inter-SemiBold", INTER_SEMIBOLD), std::slice::from_ref(&semibold))
         .family(Family::named(MEDIUM).weight(500))
@@ -88,6 +98,9 @@ pub fn ui_fonts(lang: Lang) -> UiFonts<'static> {
 const INTER_MEDIUM: &[u8] = include_bytes!("../../../assets/fonts/Inter-Medium.ttf");
 const INTER_SEMIBOLD: &[u8] = include_bytes!("../../../assets/fonts/Inter-SemiBold.ttf");
 const JETBRAINS_MONO: &[u8] = include_bytes!("../../../assets/fonts/JetBrainsMono-Regular.ttf");
+const PATRONEOS_SANS: &[u8] = include_bytes!("../../../assets/fonts/patroneos/PatroneOSSans-Regular.ttf");
+const PATRONEOS_SANS_SEMIBOLD: &[u8] = include_bytes!("../../../assets/fonts/patroneos/PatroneOSSans-SemiBold.ttf");
+const PATRONEOS_MONO: &[u8] = include_bytes!("../../../assets/fonts/patroneos/PatroneOSMono-Regular.ttf");
 
 /// The OS locale tag, which orders the regional Han faces when the interface language has none.
 #[cfg(not(target_arch = "wasm32"))]
@@ -178,6 +191,24 @@ mod tests {
                     assert_eq!(a, b, "{size} pt, {ppp} ppp, {text:?}");
                 }
             }
+        }
+    }
+
+    /// PatroneOS edition: its faces lead the interface families, with Inter behind them for the scripts
+    /// they lack.
+    #[test]
+    fn patroneos_faces_lead_the_interface_families() {
+        let defs = ui_fonts(Lang::EN).stack().flat_definitions();
+        let first = |family: FontFamily| defs.families[&family].first().cloned();
+        assert_eq!(&defs.families[&FontFamily::Proportional][..2], ["PatroneOSSans", "Inter"]);
+        assert_eq!(&defs.families[&FontFamily::Monospace][..3], ["PatroneOSMono", "JetBrainsMono", "Inter"]);
+        for name in [MEDIUM, SEMIBOLD] {
+            assert_eq!(first(FontFamily::Name(name.into())).as_deref(), Some("PatroneOSSans-SemiBold"), "{name}");
+        }
+        assert!(defs.families[&FontFamily::Proportional].iter().any(|n| n == "Inter"));
+        let mut fonts = Fonts::new(TextOptions::default(), defs);
+        for id in [FontId::proportional(13.0), FontId::monospace(13.0)] {
+            assert!(fonts.has_glyphs(&id, "PdfCraft Привет Ελληνικά"), "{id:?}");
         }
     }
 }
