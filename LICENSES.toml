@@ -56,6 +56,11 @@ destination = "assets/fonts/OFL-JetBrainsMono.txt"
 sha256 = "a76abf002c49097d146e86740a3105a5d00450b1592e820a1109a8c5680cd697"
 
 [[document]]
+source = "assets/fonts/patroneos/OFL-PatroneOS.txt"
+destination = "assets/fonts/patroneos/OFL-PatroneOS.txt"
+sha256 = "a8b68d0c4523916f7608f8b244d8d890d25273f20297ca25662efef49a9d5299"
+
+[[document]]
 source = "assets/icons/LICENSE-lucide.txt"
 destination = "assets/icons/LICENSE-lucide.txt"
 sha256 = "b495047bd93a9b06913511076f504daba17d5bbeb3e0650f3bb53a4220329c57"

@@ -553,7 +553,26 @@ pub fn key_name(s: &str) -> &str {
 
 /// Translate an English UI string; unknown strings come back unchanged.
 pub fn tr(lang: Lang, s: &str) -> &str {
-    lang.i18n().t(lang.lang, s)
+    renamed(lang.i18n().t(lang.lang, s))
+}
+
+/// Patrone PDF: the English strings and the catalogs name the app "PdfCraft", in every language; this
+/// edition is Patrone PDF. Each text that names it is rewritten once and kept, so a translation
+/// stays a borrowed string, as before.
+fn renamed(text: &str) -> &str {
+    const UPSTREAM: &str = "PdfCraft";
+    const NAME: &str = "Patrone PDF";
+    if !text.contains(UPSTREAM) {
+        return text;
+    }
+    static SEEN: std::sync::LazyLock<std::sync::Mutex<std::collections::HashMap<String, &'static str>>> = std::sync::LazyLock::new(Default::default);
+    let mut seen = SEEN.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    if let Some(done) = seen.get(text) {
+        return done;
+    }
+    let done: &'static str = Box::leak(text.replace(UPSTREAM, NAME).into_boxed_str());
+    seen.insert(text.to_owned(), done);
+    done
 }
 
 /// How the layers below say their own sentences in the current language.
@@ -569,13 +588,13 @@ pub fn words(wording: &str) -> String {
 
 /// Like [`tr`], for an English string that needs a disambiguating `context`.
 pub fn tr_ctx<'a>(lang: Lang, context: &str, s: &'a str) -> &'a str {
-    lang.i18n().tc(lang.lang, context, s)
+    renamed(lang.i18n().tc(lang.lang, context, s))
 }
 
 /// A string keyed by its command id, falling back to the translation of the English `label`. Only
 /// PdfCraft's own `@id` rows count ([`own_id`]).
 pub fn tr_id<'a>(lang: Lang, id: &str, label: &'a str) -> &'a str {
-    if own_id(lang, id, label) { lang.i18n().tid(lang.lang, id, label) } else { tr(lang, label) }
+    if own_id(lang, id, label) { renamed(lang.i18n().tid(lang.lang, id, label)) } else { tr(lang, label) }
 }
 
 /// A platform service's message in the current language: its catalog id's row, else the translation of its English.
@@ -744,5 +763,21 @@ mod picker_order_tests {
         assert!(keys.windows(2).all(|w| w[0] <= w[1]), "{keys:?}");
         assert_eq!(name_sort_key("Čeština"), "cestina");
         assert_eq!(name_sort_key("Türkçe"), "turkce");
+    }
+}
+
+/// Patrone PDF: the app's name in what the interface says.
+#[cfg(test)]
+mod patrone_name_tests {
+    use super::*;
+
+    #[test]
+    fn the_interface_names_the_app_patrone_pdf() {
+        assert_eq!(tr(Lang::EN, "Welcome to PdfCraft"), "Welcome to Patrone PDF");
+        assert_eq!(tr_ctx(Lang::EN, "any", "PdfCraft on GitHub"), "Patrone PDF on GitHub");
+        assert_eq!(renamed("PdfCraft's checks found no problems"), "Patrone PDF's checks found no problems");
+        assert_eq!(renamed("Open"), "Open");
+        // The same text comes back as the same string each time, not a new one per frame.
+        assert!(std::ptr::eq(renamed("PdfCraft web page"), renamed("PdfCraft web page")));
     }
 }

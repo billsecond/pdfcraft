@@ -13,13 +13,20 @@
 /// prompt shows both, and an AppImage's menu entry gets the icon.
 #[cfg(not(target_arch = "wasm32"))]
 pub const UPDATE_APP: craft::update::app::App = craft::update::app::App {
-    icon_png: Some(include_bytes!("../../../assets/app-icon/hicolor/128x128/apps/ai.storyteller.pdfcraft.png")),
+    icon_png: Some(include_bytes!("../../../assets/app-icon/hicolor/128x128/apps/org.patrone.Pdf.png")),
     accent: Some([0xb7, 0x02, 0x28]),
+    // Patrone PDF: its own name, releases and package identity, so a check for updates looks at this fork's
+    // releases and never offers the original PdfCraft in its place.
+    name: "Patrone PDF",
+    repo: "billsecond/pdfcraft",
+    developer: "PatroneOS",
+    bundle_id_override: Some("org.patrone.Pdf"),
     ..craft::update::suite::PDFCRAFT
 };
 
-/// PdfCraft as the framework's services know it (the host, About, recovery).
-pub const APP_INFO: craft::host::AppInfo = craft::host::AppInfo { id: "pdfcraft", name: "PdfCraft", version: env!("CARGO_PKG_VERSION") };
+/// PdfCraft as the framework's services know it (the host, About, recovery). Patrone PDF: its own name and
+/// settings folder, apart from the original's.
+pub const APP_INFO: craft::host::AppInfo = craft::host::AppInfo { id: "patronepdf", name: "Patrone PDF", version: env!("CARGO_PKG_VERSION") };
 
 /// Translate an English UI string into the current language (see [`i18n`]).
 macro_rules! tl {

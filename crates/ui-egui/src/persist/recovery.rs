@@ -35,11 +35,11 @@ pub fn default_dir() -> Option<PathBuf> {
     }
     let env = |k: &str| std::env::var_os(k).filter(|v| !v.is_empty()).map(PathBuf::from);
     if cfg!(target_os = "macos") {
-        env("HOME").map(|h| h.join("Library/Application Support/PdfCraft/Recovery"))
+        env("HOME").map(|h| h.join("Library/Application Support/PatronePDF/Recovery"))
     } else if cfg!(windows) {
-        env("LOCALAPPDATA").map(|d| d.join("PdfCraft").join("Recovery"))
+        env("LOCALAPPDATA").map(|d| d.join("PatronePDF").join("Recovery"))
     } else {
-        env("XDG_DATA_HOME").or_else(|| env("HOME").map(|h| h.join(".local/share"))).map(|d| d.join("pdfcraft/recovery"))
+        env("XDG_DATA_HOME").or_else(|| env("HOME").map(|h| h.join(".local/share"))).map(|d| d.join("patronepdf/recovery"))
     }
 }
 
@@ -49,7 +49,7 @@ pub fn default_dir() -> Option<PathBuf> {
 pub(crate) fn prepare_platform_recovery_dir() -> Option<PathBuf> {
     let portable = crate::settings::portable_dir();
     let mode = if portable.is_some() { SettingsMode::SelfContained } else { SettingsMode::Platform };
-    let dir = recovery_dir("PdfCraft", "pdfcraft", portable.as_deref(), mode, |k| std::env::var_os(k))?;
+    let dir = recovery_dir("PatronePDF", "patronepdf", portable.as_deref(), mode, |k| std::env::var_os(k))?;
     if let Some(legacy) = default_dir() {
         let _ = adopt_legacy_recovery(&legacy, &dir);
     }
@@ -66,11 +66,11 @@ pub fn default_dictionary_dir() -> Option<PathBuf> {
     }
     let env = |k: &str| std::env::var_os(k).filter(|v| !v.is_empty()).map(PathBuf::from);
     if cfg!(target_os = "macos") {
-        env("HOME").map(|h| h.join("Library/Application Support/PdfCraft/Dictionary"))
+        env("HOME").map(|h| h.join("Library/Application Support/PatronePDF/Dictionary"))
     } else if cfg!(windows) {
-        env("LOCALAPPDATA").map(|d| d.join("PdfCraft").join("Dictionary"))
+        env("LOCALAPPDATA").map(|d| d.join("PatronePDF").join("Dictionary"))
     } else {
-        env("XDG_DATA_HOME").or_else(|| env("HOME").map(|h| h.join(".local/share"))).map(|d| d.join("pdfcraft/dictionary"))
+        env("XDG_DATA_HOME").or_else(|| env("HOME").map(|h| h.join(".local/share"))).map(|d| d.join("patronepdf/dictionary"))
     }
 }
 

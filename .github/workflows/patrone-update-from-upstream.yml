@@ -1,0 +1,72 @@
+# PatroneOS edition: keep this fork up to date with the original PdfCraft (storytold/pdfcraft).
+#
+# Every day, and whenever it is run by hand (Actions > "Update from the original PdfCraft" > Run
+# workflow), this checks whether the original's main has changes this fork's main lacks. If it does
+# and no update pull request is open, it opens one whose head is the original's main itself, so the
+# pull request keeps updating as more changes land there. Nothing is merged or pushed here: merging
+# that pull request (with a merge commit) is up to you.
+#
+# Needs, once, in this fork's Settings > Actions > General: Actions allowed, and "Allow GitHub
+# Actions to create and approve pull requests" ticked.
+name: Update from the original PdfCraft
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: patrone-update-from-upstream
+
+jobs:
+  update:
+    if: github.repository != 'storytold/pdfcraft'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Open an update pull request when the original has new changes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_OWNER: storytold
+          BRANCH: main
+        run: |
+          set -euo pipefail
+          ahead=$(gh api "repos/$GITHUB_REPOSITORY/compare/$BRANCH...$UPSTREAM_OWNER:$BRANCH" --jq '.ahead_by')
+          echo "The original's $BRANCH has $ahead commit(s) this fork's $BRANCH lacks."
+          if [ "$ahead" = "0" ]; then
+            exit 0
+          fi
+          open=$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&base=$BRANCH&per_page=100" \
+            --jq "[.[] | select(.head.repo.owner.login == \"$UPSTREAM_OWNER\" and .head.ref == \"$BRANCH\")][0].number // empty")
+          if [ -n "$open" ]; then
+            echo "Pull request #$open already brings these in, and updates itself."
+            exit 0
+          fi
+          body=$(cat <<'EOF'
+          This brings in the latest changes from the original PdfCraft ([storytold/pdfcraft](https://github.com/storytold/pdfcraft)). It updates itself while it is open, as more changes land there.
+
+          **To take them:** merge with **Create a merge commit** (not squash or rebase), so the next update only carries what is new.
+
+          **If GitHub reports conflicts:** a change upstream touched something this fork changed too (most likely the interface fonts, the About dialog or the app icon). Resolve them on a branch:
+
+          ```
+          git fetch upstream
+          git switch -c update/upstream origin/main
+          git merge upstream/main
+          ```
+
+          Fix the files it names, keeping the PatroneOS changes, commit, push the branch and open a pull request from it; then close this one.
+
+          Opened by `.github/workflows/patrone-update-from-upstream.yml`.
+          EOF
+          )
+          gh api "repos/$GITHUB_REPOSITORY/pulls" \
+            -f title="Update from the original PdfCraft" \
+            -f head="$UPSTREAM_OWNER:$BRANCH" \
+            -f base="$BRANCH" \
+            -f body="$body" \
+            --jq '"Opened pull request #\(.number): \(.html_url)"'
