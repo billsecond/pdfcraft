@@ -237,11 +237,11 @@ pub struct PdfCraftSettings {
 }
 
 impl Settings for PdfCraftSettings {
-    const APP_ID: &'static str = "pdfcraft";
-    const FOLDER_NAME: &'static str = "PdfCraft";
+    const APP_ID: &'static str = "patronepdf";
+    const FOLDER_NAME: &'static str = "PatronePDF";
     const SCHEMA_VERSION: u32 = 1;
-    const PORTABLE_MARKERS: &'static [&'static str] = &["portable.txt", "PdfCraft.portable"];
-    const PORTABLE_DIR: &'static str = "PdfCraftData";
+    const PORTABLE_MARKERS: &'static [&'static str] = &["portable.txt", "PatronePDF.portable"];
+    const PORTABLE_DIR: &'static str = "PatronePDFData";
 }
 
 /// The settings store the app reads its preferences from and writes them to.

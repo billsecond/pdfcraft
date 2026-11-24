@@ -1,10 +1,23 @@
-# PdfCraft, PatroneOS edition
+# Patrone PDF
 
 <img src="../assets/app-icon/pdfcraft-small.svg" alt="" width="96">
 
-A fork of [PdfCraft](https://github.com/storytold/pdfcraft) by the ArtCraft team, kept up to date with it,
-with three changes for [PatroneOS](https://patroneos.com):
+PatroneOS's PDF app: a fork of [PdfCraft](https://github.com/storytold/pdfcraft) by the ArtCraft team, kept up
+to date with it, with these changes for [PatroneOS](https://patroneos.com):
 
+- **Its own name and identity.** The app calls itself Patrone PDF everywhere it shows its name: the window
+  title, the menus, About, the home screen and every message, in every language (`renamed` in
+  `crates/ui-egui/src/i18n.rs` swaps the name in the catalogs' text, so the translations stay upstream's).
+  Its app ID is `org.patrone.Pdf` (Linux desktop entry, AppStream, Flatpak, icons, Wayland, macOS bundle),
+  so it can sit beside the official PdfCraft. It keeps its own settings, recent files, crash recovery and
+  single-window socket (`PatronePDF` folders); on its first start it imports PdfCraft's settings once, as
+  upstream imports an older release's. A check for updates looks at this repository's releases only, and
+  Help's web page and GitHub links go to patroneos.com and this repository. The program is still
+  `pdfcraft` (`pdfcraft.exe`), and the code keeps upstream's crate and type names, which keeps updates
+  from the original easy to take.
+- **Not yet renamed:** the Windows installer (`packaging/windows`). It keeps upstream's product name and
+  upgrade code, which upstream's checks lock, so an MSI built from here would replace an installed
+  PdfCraft.
 - **PatroneOS fonts.** The interface is drawn in PatroneOS Sans (Regular, and SemiBold for medium and
   semibold text) and PatroneOS Mono, from [patroneos-fonts](https://github.com/billsecond/patroneos-fonts)
   1.1.0 (`assets/fonts/patroneos`, SIL Open Font License 1.1). Inter and JetBrains Mono stay behind them in

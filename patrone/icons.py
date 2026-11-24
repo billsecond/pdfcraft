@@ -5,8 +5,8 @@ The artwork is two vectors in assets/app-icon: pdfcraft.svg (the master) and pdf
 same picture with less detail, drawn for 16-32 px). This writes the same files packaging/icons.sh
 does, so builds and packages pick the new icon up with no other change:
 
-    hicolor/<n>x<n>/apps/ai.storyteller.pdfcraft.png   16-512 px (tiny artwork up to 32 px)
-    hicolor/scalable/apps/ai.storyteller.pdfcraft.svg  a copy of the master
+    hicolor/<n>x<n>/apps/org.patrone.Pdf.png   16-512 px (tiny artwork up to 32 px)
+    hicolor/scalable/apps/org.patrone.Pdf.svg  a copy of the master
     pdfcraft-small.svg                                 a copy of the master (README pictures)
     pdfcraft-1024.png                                  1024 px on Apple's icon grid
     pdfcraft.ico                                       Windows, 16-256 px
@@ -34,7 +34,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "assets" / "app-icon"
 MASTER = DIR / "pdfcraft.svg"
 TINY = DIR / "pdfcraft-tiny.svg"
-APP_ID = "ai.storyteller.pdfcraft"
+APP_ID = "org.patrone.Pdf"
 
 # The tiny artwork stands in for the master up to this many pixels.
 TINY_UP_TO = 32

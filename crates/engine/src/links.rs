@@ -9,8 +9,9 @@ pub const APP: &str = "pdfcraft";
 
 pub const DISCORD: &str = "https://discord.gg/artcraft";
 pub const WEBSITE: &str = "https://getartcraft.com";
-pub const APP_PAGE: &str = "https://getartcraft.com/apps/pdfcraft";
-pub const GITHUB: &str = "https://github.com/storytold/pdfcraft";
+// Patrone PDF: its own web page and source; the ArtCraft Discord and website above stay, as the makers of PdfCraft.
+pub const APP_PAGE: &str = "https://patroneos.com";
+pub const GITHUB: &str = "https://github.com/billsecond/pdfcraft";
 
 /// A link and the registry command that opens it.
 #[derive(Clone, Copy, Debug)]

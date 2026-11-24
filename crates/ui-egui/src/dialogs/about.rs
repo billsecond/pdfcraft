@@ -12,17 +12,18 @@ const MARK: &[u8] = include_bytes!("../../../../assets/app-icon/pdfcraft.svg");
 /// What the About tab shows: PdfCraft's name, blurb and version, the app's icon, and the community links.
 fn info() -> AboutInfo {
     let info = AboutInfo::new(
-        "PdfCraft",
+        "Patrone PDF",
         tl!("A clean-room, open-source PDF application written in Rust. MIT OR Apache-2.0."),
         pdfcraft_engine::build_info::version(),
     )
-    .mark(AboutImage::svg("PdfCraft", MARK))
+    .mark(AboutImage::svg("Patrone PDF", MARK))
     .built_with(
-        "PatroneOS edition, based on PdfCraft by the ArtCraft team · Rendering: hayro (bootstrap) · UI: egui · Icons: Lucide (ISC) · \
+        "Based on PdfCraft by the ArtCraft team · Rendering: hayro (bootstrap) · UI: egui · Icons: Lucide (ISC) · \
          Fonts: PatroneOS Sans and Mono, Inter, JetBrains Mono, Dancing Script (OFL)",
     );
     info.links(pdfcraft_engine::links::LINKS.iter().enumerate().map(|(i, l)| {
-        let label = if i == 0 { tl!("Join our Discord") } else { tl!(l.label) };
+        // Patrone PDF: the Discord is the ArtCraft team's, not this app's own.
+        let label = if i == 0 { tl!("Join the ArtCraft Discord") } else { tl!(l.label) };
         AboutLink::new(label.to_string(), l.url).icon(IconId::new(l.icon))
     }))
 }
